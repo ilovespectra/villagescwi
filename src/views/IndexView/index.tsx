@@ -58,7 +58,7 @@ export const IndexView: React.FC = () => {
   const baseUrl = 'https://mainnet.underdogprotocol.com/v2/projects/';
   const headers = {
     'accept': 'application/json',
-    'authorization': `Bearer ${process.env.NEXT_PUBLIC_BEARER_KEY}`,
+    'authorization': `Bearer ${process.env.NEXT_PUBLIC_UNDERDOG_API_KEY}`,
   };
 
   // Function to fetch NFTs for a specific project

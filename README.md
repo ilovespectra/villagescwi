@@ -2,6 +2,8 @@
 
 Bootstrapped with the [Underdog Next JS Gallery](https://github.com/UnderdogProtocol/underdog-nextjs-gallery)
 
+Visit [Underdog](https://www.underdogprotocol.com/) to learn more.
+
 ## Quick Start
 
 1. Install dependencies

@@ -1,6 +1,6 @@
-if (!process.env.UNDERDOG_API_KEY) {
+if (!process.env.NEXT_PUBLIC_UNDERDOG_API_KEY) {
   throw new Error(
-    "Please set UNDERDOG_API_KEY. You can get your API Key from https://app.underdogprotocol.com"
+    "Please set NEXT_PUBLIC_UNDERDOG_API_KEY. You can get your API Key from https://app.underdogprotocol.com"
   );
 }
 

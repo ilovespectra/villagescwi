@@ -4,7 +4,19 @@ Bootstrapped with the [Underdog Next JS Gallery](https://github.com/UnderdogProt
 
 Visit [Underdog](https://www.underdogprotocol.com/) to learn more.
 
+## Villages CWI
+
+The VillagesDAO Clean Water Initiative represents a partnership between Aerial IoT, Cryptochicks NFT Community, and LavaDAO. Our goal is to establish wireless connectivity, earning opportunities, and water monitoring for impacted communities around the globe. Our first SORMN has been deployed near Navi Mumbai, and our teams of women leaders are spearheading operations on the ground. Contribute to our cause by purchasing an NFT or simply donating. Follow us on [twitter](https://twitter.com/villagesdao) to learn more.
+
 ## Quick Start
+
+  - Get setup on [Underdog](https://www.underdogprotocol.com/) to get your Underdog keys. 
+  - Get setup on [Sphere](https://spherepay.co/) to get your Sphere keys. 
+  - Get setup on [Stripe](https://stripe.com/) to get your Stripe keys.
+
+### Rename and configure your `.env` file.
+
+Rename `.env.template` to `.env` and replace the values with your acquired keys. For your front-end, deployments on Vercel will need variables to start with `NEXT_PUBLIC_` in order for your UI to call them. Import this `.env` file to your Vercel Environment Variables in Settings. 
 
 1. Install dependencies
 

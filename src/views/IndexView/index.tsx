@@ -127,6 +127,7 @@ export const IndexView: React.FC = () => {
                 <div className="text-center mt-[100%] text-white">
                   {projectData[index] ? (
                     <>
+                    <br></br>
                       <p>Claimed: {projectData[index].filter((nft) => !nft.ownerAddress.startsWith('shop')).length}</p>
                       <p>Remaining: {1000 - projectData[index].filter((nft) => !nft.ownerAddress.startsWith('shop')).length}</p>
                     </>

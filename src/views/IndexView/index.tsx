@@ -1,10 +1,10 @@
 import { Container } from "@/components/Container";
 import { Header } from "@/components/MediaObject/Header";
 import { Spin } from "@/components/Spin";
-import { useProjects } from "@/hooks/useProjects";
 import Link from "next/link";
-import { useEffect, useState, useMemo } from "react";
-import axios, { AxiosResponse } from "axios";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { ProjectView } from "@/components/ProjectView";
 
 // Define a type for the NFT data
 type NFT = {
@@ -27,59 +27,40 @@ type NFT = {
 };
 
 export const IndexView: React.FC = () => {
-  const { data, isLoading } = useProjects({ query: { page: 1, limit: 20 } });
+  const [loading, setLoading] = useState(true);
+  const [projectData, setProjectData] = useState<NFT[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-
-  // Log the names of the projects
-  console.log("All projects:", data?.results.map((project) => project.name));
-
-  const filteredData = useMemo(() => {
-  if (data) {
-    return data.results.filter((project, index) => {
-      const isBarapadaCWI = project.name === "Barapada-CWI";
-      const isVillagesDAO = project.name === "VillagesDAO";
-
-      if (isBarapadaCWI && index !== 4) {
-        // Exclude the first instance of "Barapada-CWI" (index 4)
-        return false;
-      } else if (isVillagesDAO) {
-        // Exclude "VillagesDAO"
-        return false;
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('https://mainnet.underdogprotocol.com/v2/projects/', {
+          headers: {
+            'accept': 'application/json',
+            'authorization': `Bearer ${process.env.NEXT_PUBLIC_BEARER_KEY}`
+          },
+          params: {
+            page: currentPage,
+            limit: 100, // Set the limit to fetch 100 projects per request
+          },
+        });
+        setProjectData((prevData) => [...prevData, ...response.data.results]);
+        setTotalPages(response.data.meta.totalPages);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setLoading(false);
       }
-
-      return true;
-    });
-  }
-  // Return an empty array (or any default value) if data is falsy
-  return [];
-}, [data]);
-
-  // Define the base URL and headers for the API
-  const baseUrl = 'https://mainnet.underdogprotocol.com/v2/projects/';
-  const headers = {
-    'accept': 'application/json',
-    'authorization': `Bearer ${process.env.NEXT_PUBLIC_UNDERDOG_API_KEY}`,
-  };
-
-  // Function to fetch NFTs for a specific project
-  async function fetchNFTsForProject(projectId: number): Promise<NFT[]> {
-    const apiUrl = `${baseUrl}${projectId}/nfts`;
-    const params = {
-      limit: 100, // Set the limit to 100 NFTs per request
     };
 
-    try {
-      const apiResponse: AxiosResponse<{ results: NFT[] }> = await axios.get(apiUrl, { headers, params });
-      return apiResponse.data.results;
-    } catch (error) {
-      console.error(`Error making the API request for project ${projectId}:`, error);
-      return [];
+    if (currentPage <= totalPages) {
+      fetchProjects();
     }
-  }
+  }, [currentPage, totalPages]);
 
   const loadingTimeout = 2000; // Simulated loading time in milliseconds
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Simulate a loading delay
@@ -92,60 +73,41 @@ export const IndexView: React.FC = () => {
     };
   }, []);
 
-
-  const [projectData, setProjectData] = useState<NFT[][]>([]);
-
-  useEffect(() => {
-    if (filteredData) {
-      // Fetch NFT data for each project
-      Promise.all(filteredData.map((project) => fetchNFTsForProject(project.id)))
-        .then((results) => {
-          setProjectData(results);
-        })
-        .catch((error) => {
-          console.error("Error fetching NFTs:", error);
-        });
-    }
-  }, [filteredData]);
-
   return (
     <Container size="2xl" className="pt-8 space-y-8">
       <Header />
       <img src="/villagesbanner.png" alt="VD Logo" style={{ width: '100%' }} />
-      {!filteredData || isLoading || loading ? (
+      {loading ? (
         <div className="flex justify-center py-4">
           <Spin />
         </div>
       ) : (
         <>
           <div className="grid grid-cols-3 gap-1" style={{ rowGap: '0', height: '100%' }}>
-            {filteredData.map((project, index) => (
-              <div key={project.id} className="relative pb-[relative] rounded-md overflow-hidden hover:opacity-50">
-                <Link href={`/${project.id}`}>
-                  <img className="absolute h-[80%] w-full object-cover" src={project.image} />
-                </Link>
-                <div className="text-center mt-[100%] text-white">
-                  {projectData[index] ? (
-                    <>
-                    <br></br>
-                      <p>Claimed: {projectData[index].filter((nft) => !nft.ownerAddress.startsWith('shop')).length}</p>
-                      <p>Remaining: {1000 - projectData[index].filter((nft) => !nft.ownerAddress.startsWith('shop')).length}</p>
-                    </>
-                  ) : (
-                    <div className="loading-bar">
-                      <div className="water-level"></div>
+            {projectData
+              .filter((project) => [2, 4, 5].includes(project.id)) // Filter projects with IDs 2, 3, and 5
+              .map((project) => {
+                // Calculate claimed and remaining NFTs for each project
+                const claimedCount = projectData.filter((nft) => nft.ownerAddress && !nft.ownerAddress.startsWith('shop')).length;
+                const remainingCount = 1000 - claimedCount;
+                
+                return (
+                  <div key={project.id} className="relative pb-[relative] rounded-md overflow-hidden hover:opacity-50">
+                    <Link href={`/${project.id}`}>
+                      <img className="absolute h-[80%] w-full object-cover" src={project.image} />
+                    </Link>
+                    <div className="text-center mt-[100%] text-white">
                     </div>
-                  )}
-                </div>
-              </div>
-            ))}
+                  </div>
+                );
+              })}
           </div>
         </>
       )}
       <center>
         <div className="text-white">
           <p>
-            <i>Select a collection above to mint, or bypass all the crypto stuff with a simple donation:</i>
+            <i>Contribute using a credit or debit card with Stripe</i>
           </p>
         </div>
       </center>
@@ -189,3 +151,4 @@ export const IndexView: React.FC = () => {
     </Container>
   );
 };
+

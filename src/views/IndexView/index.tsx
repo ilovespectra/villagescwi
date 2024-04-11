@@ -4,7 +4,6 @@ import { Spin } from "@/components/Spin";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { ProjectView } from "@/components/ProjectView";
 
 // Define a type for the NFT data
 type NFT = {
